@@ -1,0 +1,175 @@
+title: "irisfx"
+author: "onome"
+date: "2025-08-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(readr)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+irisdf <- read.csv("iris.csv")
+``` 
+## data description 
+```{r}
+tail(irisdf)
+```
+
+```{r}
+attributes(irisdf)
+```
+
+```{r}
+summary(irisdf) 
+```
+
+```{r}
+str(irisdf)
+```
+
+```{r}
+names(irisdf)
+```
+
+```{r}
+irisdf$X
+```
+
+```{r}
+irisdf$Sepal.Length
+```
+
+```{r}
+irisdf$Sepal.Width
+```
+
+```{r}
+irisdf$Petal.Length
+```
+
+```{r}
+irisdf$Petal.Width
+```
+
+```{r}
+irisdf$Species
+```
+
+# Data preprocessing
+## checking for duplicates
+
+```{r}
+duplicated(irisdf)
+```
+
+## checking for missing value
+
+```{r}
+is.na(irisdf)
+```
+
+```{r}
+sum(is.na(irisdf))
+```
+
+### imputation of missing values using the mean values
+```{r}
+irisdf$Petal.Width[is.na(irisdf$Petal.Width)]<-mean(irisdf$Petal.Width,na.rm = TRUE)
+```
+## imputatation of missing value using the median value
+```{r}
+irisdf_imputed <- irisdf %>% mutate(across(where(is.numeric), ~ ifelse(is.na(.), median(., na.rm = TRUE), .)))
+```
+
+# checking outliers
+```{r}
+boxplot(irisdf$X)
+```
+
+```{r}
+boxplot(irisdf$Sepal.Length)
+```
+
+```{r}
+boxplot(irisdf$Petal.Width)
+```
+#eda exploratry data analysis
+## univiriant analysis
+```{r}
+m <- ggplot(irisdf, aes(Sepal.Length, Sepal.Width))
+```
+
+```{r}
+hist(irisdf$Sepal.Length)
+```
+
+```{r}
+hist(irisdf$Sepal.Width)
+```
+
+```{r}
+plot(irisdf$X)
+```
+
+```{r}
+plot(irisdf$Sepal.Length,irisdf$Sepal.Width)
+```
+
+```{r}
+qqnorm(irisdf$X)
+```
+
+##predictive modeling 
+##data spliting
+
+```{r}
+set.seed(123)
+```
+
+```{r}
+trainSize<-round(nrow(irisdf)*0.7) 
+testSize<-nrow(irisdf)-trainSize
+
+```
+
+```{r}
+trainSize
+testSize
+```
+
+```{r}
+training_indices<-sample(seq_len(nrow(irisdf)),size =trainSize)
+trainSet<-irisdf[training_indices,]
+testSet<-irisdf[-training_indices,] 
+
+```
+
+```{r}
+trainSet
+```
+
+```{r}
+testSet
+```
+
+##training the model
+```{r}
+Sl_model<-lm(Sepal.Length~ Sepal.Width, trainSet)
+```
+
+```{r}
+summary(Sl_model)
+```
+
+```{r}
+Sl_model
+```
